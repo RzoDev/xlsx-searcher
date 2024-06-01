@@ -1,0 +1,62 @@
+<div class="d w-100">
+  <div class="d-inline">
+    <input type="file" (change)="loadFile($event.target)" accept=".xlsx"/>
+  </div>
+</div>
+<div class="d w-100 mb-1">
+  <div class="d-inline">
+    <label>
+      <input type="checkbox" [formControl]="useFirstRowAsHeader">
+      Tomar primera fila como cabecera
+    </label>
+  </div>
+</div>
+<div class="d w-100 mb-1">
+  <div class="d-inline">
+    <label>
+      <input type="checkbox" [formControl]="convertDates">
+      Convertir fechas a formato dd/MM/YYYY
+    </label>
+  </div>
+</div>
+<div class="d w-100">
+  <div class="d-inline">
+    <select [formControl]="tab">
+      <option [value]="null" disabled>Seleccione pestaña</option>
+      <option *ngFor="let o of tabs; let i = index;" [ngValue]="o">{{o.name}} ({{o.size}})</option>
+    </select>
+  </div>
+  <div class="d-inline ms-1 w-100">
+    <input class="w-100" type="text" [formControl]="search" placeholder="Buscar">
+  </div>
+  <div class="d-inline ms-1">
+    <button (click)="search.reset()">Limpiar</button>
+  </div>
+</div>
+<ng-container *ngIf="(file!=undefined && getTab()!=null) else noData">
+  <figure>
+    <table class="w-100">
+      <caption class="w-100 text-left">{{file.name}}<span *ngIf="getTab()"> - {{getTab().name}} - Mostrando ({{getData().length}}) coincidencias</span></caption>
+      <thead>
+        <tr>
+          <th *ngFor="let head of getTab().headers">{{head}}</th>
+        </tr>
+      </thead>
+      <tbody *ngIf="getData().length>0 else noResults">
+        <tr *ngFor="let row of getData(); let rowIndex = index;">
+          <td *ngFor="let val of row;let dataIndex = index;" [innerHtml]="gVal(val)"></td>
+        </tr>
+      </tbody>
+      <ng-template #noResults>
+        <tr>
+          <td class="text-center" [attr.colspan]="getTab().headers.length || 1">Sin datos para mostrar</td>
+        </tr>
+      </ng-template>
+    </table>
+  </figure>
+</ng-container>
+<ng-template #noData>
+  <p class="red">Seleccione un archivo XLSX.</p>
+</ng-template>
+
+<!-- <router-outlet /> -->
